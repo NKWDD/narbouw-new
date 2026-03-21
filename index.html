@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Nartbouw Renovaties</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --red: #8b1a1a;
+      --red-dark: #641212;
+      --black: #080808;
+      --surface: #111111;
+      --surface-2: #181818;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8e8e8;
+      --text-muted: #888;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+      --font-cond: 'Barlow Condensed', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--text); font-family: var(--font-body); font-weight: 400; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+    /* ── HEADER ── */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0 32px; height: 68px;
+      display: flex; align-items: center; justify-content: flex-end;
+      background: rgba(8,8,8,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); transition: all 0.3s;
+    }
+    #header.scrolled { height: 56px; background: rgba(8,8,8,0.98); }
+
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--font-cond); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.2s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.25s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    .lang-select { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: var(--font-cond); font-size: 12px; letter-spacing: 1px; padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: border-color 0.2s, color 0.2s; appearance: none; }
+    .lang-select:hover { border-color: var(--red); color: #fff; }
+    .lang-select option { background: #111; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .hamburger span { display: block; width: 26px; height: 2px; background: #fff; transition: all 0.3s; border-radius: 1px; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-nav { display: none; position: fixed; top: 68px; left: 0; right: 0; bottom: 0; background: rgba(8,8,8,0.97); backdrop-filter: blur(20px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { font-family: var(--font-display); font-size: 42px; letter-spacing: 3px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .mobile-nav a:hover { color: var(--red); }
+
+    /* ── HERO ── */
+    #hero { position: relative; height: 100vh; min-height: 700px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .hero-carousel { position: absolute; inset: 0; z-index: 0; }
+    .hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.2s ease; }
+    .hero-slide.active { opacity: 1; }
+
+    #hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.72) 0%, rgba(8,8,8,0.55) 40%, rgba(8,8,8,0.88) 100%),
+        radial-gradient(ellipse at center, transparent 20%, rgba(8,8,8,0.6) 100%);
+    }
+    #hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; z-index: 3; background: linear-gradient(90deg, transparent, var(--red) 30%, var(--red) 70%, transparent); }
+
+    .hero-content {
+      position: relative; z-index: 2; text-align: center; padding: 0 24px; max-width: 860px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* Logo inside hero */
+    .hero-logo {
+      width: 220px; height: auto; object-fit: contain; display: block;
+      margin-bottom: 32px; padding-top: 80px;
+      opacity: 0; animation: fadeUp 0.8s 0.1s forwards;
+    }
+
+    .hero-eyebrow { font-family: var(--font-cond); font-size: 12px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; opacity: 0; animation: fadeUp 0.8s 0.3s forwards; }
+    .hero-title { font-family: var(--font-display); font-size: clamp(52px, 9vw, 110px); line-height: 0.95; letter-spacing: 3px; color: #fff; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+    .hero-title span { color: var(--red); }
+    .hero-divider { width: 60px; height: 3px; background: var(--red); margin: 0 auto 24px; opacity: 0; animation: fadeUp 0.8s 0.7s forwards; }
+    .hero-desc { font-size: 15px; line-height: 1.85; color: rgba(232,232,232,0.85); max-width: 640px; margin: 0 auto 14px; opacity: 0; animation: fadeUp 0.8s 0.9s forwards; }
+    .hero-desc-2 { font-size: 14px; line-height: 1.8; color: rgba(232,232,232,0.72); max-width: 600px; margin: 0 auto 40px; opacity: 0; animation: fadeUp 0.8s 1.0s forwards; }
+
+    .hero-cta { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-cond); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #fff; text-decoration: none; background: var(--red); border: 2px solid var(--red); padding: 16px 110px; border-radius: 50px; transition: all 0.3s; opacity: 0; animation: fadeUp 0.8s 1.1s forwards; position: relative; overflow: hidden; }
+    .hero-cta::before { content: ''; position: absolute; inset: 0; background: var(--red-dark); transform: translateX(-100%); transition: transform 0.35s ease; z-index: -1; }
+    .hero-cta:hover { border-color: var(--red-dark); color: #fff; }
+    .hero-cta:hover::before { transform: translateX(0); }
+
+    .hero-dots { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; gap: 8px; }
+    .hero-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; transition: all 0.3s; }
+    .hero-dot.active { width: 24px; border-radius: 3px; background: var(--red); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── COMMON ── */
+    section { padding: 100px 0; }
+    .section-tag { font-family: var(--font-cond); font-size: 11px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+    .section-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 60px); letter-spacing: 2px; color: #fff; margin-bottom: 16px; line-height: 1; }
+    .section-desc { font-size: 15px; line-height: 1.8; color: var(--text-muted); max-width: 560px; }
+    .divider-line { width: 48px; height: 3px; background: var(--red); margin-bottom: 20px; }
+
+    /* ── SERVICES ── */
+    #services { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .services-header { text-align: center; margin-bottom: 56px; }
+    .services-header .section-desc { margin: 0 auto; text-align: center; }
+    .services-header .divider-line { margin: 0 auto 20px; }
+
+    .services-list { display: flex; flex-direction: column; }
+    .service-row { display: flex; align-items: center; gap: 28px; padding: 20px 0; border-bottom: 1px solid var(--border); transition: all 0.25s; cursor: default; }
+    .service-row:first-child { border-top: 1px solid var(--border); }
+    .service-row:hover { padding-left: 8px; }
+    .service-num { font-family: var(--font-display); font-size: 13px; letter-spacing: 1px; color: var(--red); width: 28px; flex-shrink: 0; opacity: 0.7; }
+    .service-row-icon { font-size: 17px; color: var(--red); width: 20px; flex-shrink: 0; transition: transform 0.25s; }
+    .service-row:hover .service-row-icon { transform: scale(1.2); }
+    .service-row-body { flex: 1; }
+    .service-row-body h3 { font-family: var(--font-cond); font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 2px; transition: color 0.2s; }
+    .service-row:hover .service-row-body h3 { color: var(--red); }
+    .service-row-body p { font-size: 13px; line-height: 1.5; color: var(--text-muted); margin: 0; }
+    .service-row-arrow { font-size: 13px; color: var(--border); transition: color 0.25s, transform 0.25s; flex-shrink: 0; }
+    .service-row:hover .service-row-arrow { color: var(--red); transform: translateX(4px); }
+
+    /* ── WHY US ── */
+    #why-us { background: var(--black); }
+    .why-us-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .why-us-text p { font-size: 15px; line-height: 1.9; color: var(--text-muted); margin-bottom: 20px; }
+    .why-us-text .closing { font-family: var(--font-cond); font-size: 17px; font-weight: 600; letter-spacing: 1px; color: rgba(232,232,232,0.6); font-style: italic; margin-top: 8px; margin-bottom: 0; }
+    .why-list { display: flex; flex-direction: column; }
+    .why-item { display: flex; align-items: center; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--border); transition: all 0.25s; }
+    .why-item:first-child { border-top: 1px solid var(--border); }
+    .why-item:hover { padding-left: 6px; }
+    .why-icon { width: 44px; height: 44px; flex-shrink: 0; background: rgba(158,15,15,0.1); border: 1px solid rgba(158,15,15,0.25); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--red); transition: all 0.25s; }
+    .why-item:hover .why-icon { background: var(--red); color: #fff; border-color: var(--red); }
+    .why-item-body h4 { font-family: var(--font-cond); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 2px; }
+    .why-item-body p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+    /* ── GET STARTED ── */
+    #get-started { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    #get-started::before { content: 'NART'; position: absolute; top: -40px; right: -20px; font-family: var(--font-display); font-size: 260px; color: rgba(255,255,255,0.018); pointer-events: none; line-height: 1; user-select: none; }
+    .get-started-left h3 { font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); letter-spacing: 2px; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+    .get-started-left h3 span { color: var(--red); }
+    .get-started-left p { font-size: 15px; line-height: 1.8; color: var(--text-muted); margin-bottom: 32px; max-width: 480px; }
+    .contact-detail { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 14px; color: var(--text-muted); }
+    .contact-detail i { color: var(--red); font-size: 16px; width: 20px; }
+
+    .quote-form { background: var(--surface-2); border: 1px solid var(--border); padding: 40px; border-radius: 4px; position: relative; }
+    .quote-form::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--red), var(--red-dark)); }
+    .quote-form h3 { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; color: #fff; margin-bottom: 6px; }
+    .quote-form > p { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
+    .form-control { background: rgba(255,255,255,0.04) !important; border: 1px solid var(--border) !important; border-radius: 3px !important; color: #fff !important; font-family: var(--font-body) !important; font-size: 14px !important; padding: 14px 16px !important; transition: border-color 0.2s !important; }
+    .form-control::placeholder { color: var(--text-muted) !important; }
+    .form-control:focus { outline: none !important; box-shadow: none !important; border-color: var(--red) !important; background: rgba(158,15,15,0.05) !important; }
+    .btn-submit { width: 100%; padding: 16px; background: var(--red); border: none; border-radius: 3px; font-family: var(--font-cond); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #fff; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+    .btn-submit:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--black); }
+    .projects-header { margin-bottom: 48px; }
+    .portfolio-grid { columns: 3; column-gap: 16px; }
+    .portfolio-item { break-inside: avoid; margin-bottom: 16px; position: relative; overflow: hidden; border-radius: 3px; cursor: pointer; }
+    .portfolio-item img { width: 100%; display: block; transition: transform 0.5s ease; }
+    .portfolio-item:hover img { transform: scale(1.05); }
+    .portfolio-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,0.9) 0%, transparent 50%); opacity: 0; transition: opacity 0.3s; display: flex; align-items: flex-end; padding: 20px; }
+    .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+    .portfolio-overlay-content h4 { font-family: var(--font-cond); font-size: 16px; font-weight: 700; letter-spacing: 1px; color: #fff; margin-bottom: 4px; }
+    .portfolio-overlay-content .tag { font-family: var(--font-cond); font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--red); }
+
+    /* ── FOOTER ── */
+    #footer { background: var(--surface); border-top: 1px solid var(--border); padding-top: 64px; }
+    .footer-brand h3 { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; color: #fff; margin-bottom: 4px; }
+    .footer-brand .sub { font-family: var(--font-cond); font-size: 10px; letter-spacing: 5px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 20px; }
+    .footer-brand p { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+    .footer-socials { display: flex; gap: 8px; margin-top: 24px; }
+    .footer-social-link { width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 15px; transition: all 0.2s; }
+    .footer-social-link:hover { background: var(--red); border-color: var(--red); color: #fff; }
+    .footer-col h4 { font-family: var(--font-cond); font-size: 12px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #fff; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { font-size: 14px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 8px; }
+    .footer-col ul li a::before { content: ''; width: 4px; height: 4px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom { margin-top: 56px; padding: 20px 0; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom p { font-size: 12px; color: var(--text-muted); }
+    .footer-bottom a { color: var(--red); text-decoration: none; }
+
+    .scroll-top { position: fixed; bottom: 28px; right: 28px; width: 44px; height: 44px; background: var(--red); color: #fff; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 20px; text-decoration: none; opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 500; }
+    .scroll-top.show { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { background: var(--red-dark); color: #fff; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 991px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .portfolio-grid { columns: 2; }
+      .why-us-inner { grid-template-columns: 1fr; gap: 48px; }
+    }
+    @media (max-width: 600px) {
+      /* General */
+      #header { padding: 0 20px; height: 56px; }
+      section { padding: 60px 0; }
+
+      /* Hero */
+      #hero { min-height: 100svh; align-items: flex-start; padding-top: 80px; }
+      .hero-logo {
+        width: 260px;
+        padding-top: 0;
+        margin-bottom: 20px;
+      }
+      .hero-eyebrow { font-size: 10px; letter-spacing: 4px; margin-bottom: 10px; }
+      .hero-title { font-size: clamp(42px, 14vw, 64px); margin-bottom: 16px; }
+      .hero-divider { margin-bottom: 16px; }
+      .hero-desc { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+      .hero-desc-2 { font-size: 12px; line-height: 1.7; margin-bottom: 28px; }
+      .hero-cta { padding: 13px 32px; font-size: 12px; letter-spacing: 2px; }
+      .hero-slide { background-size: 220%; background-position: center 25%; }
+
+      /* Services - two columns */
+      #services .row { display: flex !important; flex-wrap: nowrap !important; }
+      #services .col-lg-6 { flex: 0 0 50% !important; max-width: 50% !important; padding: 0 4px !important; }
+      .services-header { margin-bottom: 32px; }
+      .service-row { gap: 8px; padding: 12px 0; }
+      .service-num { display: none; }
+      .service-row-icon { font-size: 13px; width: 14px; }
+      .service-row-body h3 { font-size: 13px; letter-spacing: 0; line-height: 1.3; margin-bottom: 0; }
+      .service-row-body p { display: none; }
+      .service-row-arrow { display: none; }
+      .service-row:hover { padding-left: 4px; }
+
+      /* Why us */
+      .why-us-inner { gap: 36px; }
+      .why-item { padding: 14px 0; }
+      .why-icon { width: 38px; height: 38px; font-size: 14px; }
+
+      /* Contact form */
+      .quote-form { padding: 24px 16px; }
+      .get-started-left p { margin-bottom: 20px; }
+
+      /* Projects */
+      .portfolio-grid { columns: 1; }
+
+      /* Footer */
+      .footer-bottom { flex-direction: column; text-align: center; gap: 6px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header id="header">
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li>
+          <select class="lang-select" id="language-selector" onchange="changeLanguage()">
+            <option value="index.html" selected>EN</option>
+            <option value="index-nl.html">NL</option>
+            <option value="index-pl.html">PL</option>
+          </select>
+        </li>
+      </ul>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-carousel" id="heroCarousel">
+      <div class="hero-slide active" style="background-image: url(assets/img/hero-carousel/sciana.png)"></div>
+    </div>
+
+    <div class="hero-content">
+      <img src="assets/img/logo.png" alt="NartBouw" class="hero-logo">
+      <p class="hero-eyebrow">Professional Renovations</p>
+      <h1 class="hero-title">Welcome to<br><span>Nartbouw</span></h1>
+      <div class="hero-divider"></div>
+      <p class="hero-desc">For 7 years we have been delivering complete home renovations and interior fit-outs. We create modern, functional and durable spaces – from drywall systems and LED suspended ceilings, to bathroom renovations, door installation, flooring and interior joinery.</p>
+      <p class="hero-desc-2">We work with precision, keep the site clean and stick to the agreed schedule. Every project is treated individually – we advise, plan and deliver with full commitment.</p>
+      <a href="#get-started" class="hero-cta">Interested? <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="hero-dots" id="heroDots"></div>
+  </section>
+
+  <main id="main">
+
+    <!-- SERVICES -->
+    <section id="services">
+      <div class="container">
+        <div class="services-header">
+          <p class="section-tag">What We Offer</p>
+          <h2 class="section-title">Our Services</h2>
+          <div class="divider-line"></div>
+          <p class="section-desc">Complete interior fit-outs from A to Z – no job is too big or too small.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="services-list">
+              <div class="service-row">
+                <span class="service-num">01</span>
+                <i class="fa-solid fa-layer-group service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Full interior fit-outs</h3>
+                  <p>Complete delivery from design to handover of keys.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">02</span>
+                <i class="fa-solid fa-border-all service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Drywall walls &amp; GK structures</h3>
+                  <p>Load-bearing, partition walls and utility enclosures.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">03</span>
+                <i class="fa-solid fa-volume-xmark service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Acoustic insulation &amp; cinema walls</h3>
+                  <p>Professional soundproofing and dedicated AV rooms.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">04</span>
+                <i class="fa-solid fa-lightbulb service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>LED suspended ceilings</h3>
+                  <p>Ceiling systems, suspended ceilings and LED lighting.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">05</span>
+                <i class="fa-solid fa-grip-lines service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Flooring installation</h3>
+                  <p>Panels and skirting boards – fast and precise.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="services-list">
+              <div class="service-row">
+                <span class="service-num">06</span>
+                <i class="fa-solid fa-fill-drip service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Interior painting</h3>
+                  <p>Careful surface preparation and even coverage.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">07</span>
+                <i class="fa-solid fa-door-open service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Interior joinery – frames &amp; doors</h3>
+                  <p>Installation of frames, sliding and hinged doors.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">08</span>
+                <i class="fa-solid fa-ruler-horizontal service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Skirting boards</h3>
+                  <p>Wall-to-floor finishing with attention to detail.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">09</span>
+                <i class="fa-solid fa-shower service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Full bathroom renovations</h3>
+                  <p>Sanitary ware, tiling, waterproofing and fixtures.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+              <div class="service-row">
+                <span class="service-num">10</span>
+                <i class="fa-solid fa-hammer service-row-icon"></i>
+                <div class="service-row-body">
+                  <h3>Repairs &amp; renovation works</h3>
+                  <p>Fast and reliable – small and large jobs alike.</p>
+                </div>
+                <i class="bi bi-arrow-right service-row-arrow"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY US -->
+    <section id="why-us">
+      <div class="container">
+        <div class="why-us-inner">
+          <div class="why-us-text">
+            <p class="section-tag">Our Values</p>
+            <h2 class="section-title">Why should you<br><span style="color:var(--red)">trust us?</span></h2>
+            <div class="divider-line"></div>
+            <p>We use proven technologies and high-quality materials to ensure the end result is durable and looks great for years to come.</p>
+            <p>We approach every project with full dedication – regardless of its scale. Our goal is to create a space where you feel comfortable every single day.</p>
+            <p class="closing">Let's build your dream interior together.</p>
+          </div>
+          <div class="why-list">
+            <div class="why-item">
+              <div class="why-icon"><i class="bi bi-clock-history"></i></div>
+              <div class="why-item-body">
+                <h4>On time, every time</h4>
+                <p>We keep our deadlines and our word.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon"><i class="bi bi-award"></i></div>
+              <div class="why-item-body">
+                <h4>High quality workmanship</h4>
+                <p>Attention to every detail at every stage of the work.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon"><i class="bi bi-cpu"></i></div>
+              <div class="why-item-body">
+                <h4>Modern &amp; proven techniques</h4>
+                <p>We use materials and methods proven over many years.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon"><i class="bi bi-person-check"></i></div>
+              <div class="why-item-body">
+                <h4>Individual approach</h4>
+                <p>Every project is planned around the specific needs of the client.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-icon"><i class="bi bi-brush"></i></div>
+              <div class="why-item-body">
+                <h4>Clean &amp; tidy on site</h4>
+                <p>We work neatly – the site is cleaned up every single day.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GET STARTED -->
+    <section id="get-started">
+      <div class="container">
+        <div class="row justify-content-between gy-5">
+          <div class="col-lg-5 d-flex align-items-center">
+            <div class="get-started-left">
+              <p class="section-tag">Get in touch</p>
+              <h3>Ready to transform<br>your <span>home?</span></h3>
+              <div class="divider-line"></div>
+              <p>With 7 years of experience we handle everything from start to finish – advising, planning and delivering your vision with full commitment.</p>
+              <div class="contact-detail">
+                <i class="bi bi-telephone-fill"></i>
+                <span>+1 5589 55488 55</span>
+              </div>
+              <div class="contact-detail">
+                <i class="bi bi-envelope-fill"></i>
+                <span>nartbouw@gmail.com</span>
+              </div>
+              <div class="contact-detail">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Oss, Netherlands</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="quote-form">
+              <h3>Get a Quote</h3>
+              <p>No obligations, just expert advice. Let's bring your vision to life!</p>
+              <form action="https://formspree.io/f/xvgzjjer" method="POST">
+                <div class="row gy-3">
+                  <div class="col-md-12">
+                    <input type="text" name="name" class="form-control" placeholder="Full name" required>
+                  </div>
+                  <div class="col-md-12">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                  </div>
+                  <div class="col-md-12">
+                    <input type="text" name="phone" class="form-control" placeholder="Phone number" required>
+                  </div>
+                  <div class="col-md-12">
+                    <textarea class="form-control" name="message" rows="5" placeholder="Tell us about your project..." required></textarea>
+                  </div>
+                  <div class="col-md-12">
+                    <button type="submit" class="btn-submit">Send request →</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="container">
+        <div class="projects-header">
+          <p class="section-tag">Portfolio</p>
+          <h2 class="section-title">Our Projects</h2>
+          <div class="divider-line"></div>
+          <p class="section-desc">Quality and craftsmanship in every project – from simple updates to full home transformations.</p>
+        </div>
+
+        <div class="portfolio-grid" id="portfolioGrid">
+          <div class="portfolio-item">
+            <img src="assets/img/projects/remodeling-1.jpg" alt="Remodeling 1">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Fit-out</p><h4>Remodeling 1</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/repairs-1.jpg" alt="Repairs 1">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Renovation</p><h4>Repairs 1</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/design-1.jpg" alt="Design 1">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Design</p><h4>Design 1</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/remodeling-2.jpg" alt="Remodeling 2">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Fit-out</p><h4>Remodeling 2</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/repairs-2.jpg" alt="Repairs 2">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Renovation</p><h4>Repairs 2</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/design-2.jpg" alt="Design 2">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Design</p><h4>Design 2</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/remodeling-3.jpg" alt="Remodeling 3">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Fit-out</p><h4>Remodeling 3</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/repairs-3.jpg" alt="Repairs 3">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Renovation</p><h4>Repairs 3</h4></div></div>
+          </div>
+          <div class="portfolio-item">
+            <img src="assets/img/projects/design-3.jpg" alt="Design 3">
+            <div class="portfolio-overlay"><div class="portfolio-overlay-content"><p class="tag">Design</p><h4>Design 3</h4></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row gy-5">
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-brand">
+            <h3>NartBouw</h3>
+            <p class="sub">Renovaties</p>
+            <p>Oss, Netherlands<br><br>
+            <strong style="color:#fff">Tel:</strong> +1 5589 55488 55<br>
+            <strong style="color:#fff">Email:</strong> nartbouw@gmail.com</p>
+            <div class="footer-socials">
+              <a href="#" class="footer-social-link"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-link"><i class="bi bi-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Projects</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 col-6">
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <strong>NartBouw</strong> — All Rights Reserved</p>
+        <p>Designed by <a href="https://craftywave.nl/" target="_blank">Craftywave</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="scroll-top" id="scrollTop"><i class="bi bi-arrow-up-short"></i></a>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function changeLanguage() {
+      const sel = document.getElementById('language-selector');
+      if (sel.value) window.location.href = sel.value;
+    }
+
+    const header = document.getElementById('header');
+    const scrollTopBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 80) { header.classList.add('scrolled'); scrollTopBtn.classList.add('show'); }
+      else { header.classList.remove('scrolled'); scrollTopBtn.classList.remove('show'); }
+    });
+
+    const ham = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    ham.addEventListener('click', () => { ham.classList.toggle('open'); mobileNav.classList.toggle('open'); });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      ham.classList.remove('open');
+      mobileNav.classList.remove('open');
+    }));
+
+    const slides = document.querySelectorAll('.hero-slide');
+    const dotsContainer = document.getElementById('heroDots');
+    let current = 0;
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      dotsContainer.children[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsContainer.children[current].classList.add('active');
+    }
+    setInterval(() => goTo(current + 1), 5000);
+
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const langSel = document.getElementById('language-selector');
+    if (langSel) {
+      const match = Array.from(langSel.options).find(o => o.value === currentPage);
+      if (match) langSel.value = currentPage;
+      else langSel.value = 'index.html';
+    }
+  </script>
+
+</body>
+</html>
